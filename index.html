@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Алина Мустакимова — Калькулятор калорий</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #ec4899;
+            --accent: #8b5cf6;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #1e293b;
+            --text-light: #64748b;
+            --border: #e2e8f0;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+            --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.1), 0 8px 10px -6px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: var(--text);
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 8px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: var(--card);
+            border-radius: 24px;
+            padding: 32px;
+            margin-bottom: 24px;
+            box-shadow: var(--shadow-lg);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-2px);
+        }
+
+        .section-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title .icon {
+            width: 32px;
+            height: 32px;
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-light);
+        }
+
+        input, select {
+            padding: 12px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            font-size: 1rem;
+            font-family: inherit;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+        }
+
+        .radio-group {
+            display: flex;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .radio-option {
+            flex: 1;
+            min-width: 120px;
+        }
+
+        .radio-option input {
+            display: none;
+        }
+
+        .radio-option label {
+            display: block;
+            padding: 14px 16px;
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            color: var(--text);
+        }
+
+        .radio-option input:checked + label {
+            border-color: var(--primary);
+            background: linear-gradient(135deg, rgba(99,102,241,0.05), rgba(139,92,246,0.05));
+            color: var(--primary);
+        }
+
+        .radio-option label:hover {
+            border-color: var(--primary);
+        }
+
+        select {
+            cursor: pointer;
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 40px;
+        }
+
+        .activity-desc {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            margin-top: 4px;
+            font-style: italic;
+        }
+
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            padding: 16px 32px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            font-family: inherit;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+            margin-top: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            box-shadow: 0 4px 14px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            display: none;
+            animation: fadeIn 0.6s ease;
+        }
+
+        .results.active {
+            display: block;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+            border-radius: 16px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
+
+        .stat-value {
+            font-size: 1.75rem;
+            font-weight: 700;
+            color: var(--primary);
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: var(--text-light);
+            font-weight: 500;
+        }
+
+        .stat-card.highlight {
+            background: linear-gradient(135deg, var(--primary), var(--accent));
+            color: white;
+            border: none;
+        }
+
+        .stat-card.highlight .stat-value {
+            color: white;
+        }
+
+        .stat-card.highlight .stat-label {
+            color: rgba(255,255,255,0.8);
+        }
+
+        .warning-box {
+            background: linear-gradient(135deg, #fef3c7, #fde68a);
+            border: 1px solid #f59e0b;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+            display: none;
+        }
+
+        .warning-box.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        .warning-box.danger {
+            background: linear-gradient(135deg, #fee2e2, #fecaca);
+            border-color: var(--danger);
+        }
+
+        .warning-box.success {
+            background: linear-gradient(135deg, #d1fae5, #a7f3d0);
+            border-color: var(--success);
+        }
+
+        .recommendations {
+            margin-top: 24px;
+        }
+
+        .rec-list {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .rec-item {
+            background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+            border-left: 4px solid var(--success);
+            border-radius: 12px;
+            padding: 16px 20px;
+            display: flex;
+            align-items: flex-start;
+            gap: 12px;
+            animation: slideIn 0.5s ease backwards;
+        }
+
+        .rec-item:nth-child(1) { animation-delay: 0.1s; }
+        .rec-item:nth-child(2) { animation-delay: 0.2s; }
+        .rec-item:nth-child(3) { animation-delay: 0.3s; }
+        .rec-item:nth-child(4) { animation-delay: 0.4s; }
+        .rec-item:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateX(-20px); }
+            to { opacity: 1; transform: translateX(0); }
+        }
+
+        .rec-item.gain {
+            background: linear-gradient(135deg, #eff6ff, #dbeafe);
+            border-left-color: var(--primary);
+        }
+
+        .rec-icon {
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--success);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.875rem;
+            flex-shrink: 0;
+            margin-top: 2px;
+        }
+
+        .rec-item.gain .rec-icon {
+            background: var(--primary);
+        }
+
+        .rec-text {
+            font-size: 0.95rem;
+            color: var(--text);
+            line-height: 1.5;
+        }
+
+        .divider {
+            height: 1px;
+            background: var(--border);
+            margin: 24px 0;
+        }
+
+        .formula-info {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 16px;
+            font-size: 0.85rem;
+            color: var(--text-light);
+            margin-top: 16px;
+        }
+
+        .formula-info code {
+            background: white;
+            padding: 2px 6px;
+            border-radius: 4px;
+            border: 1px solid var(--border);
+            font-family: 'Courier New', monospace;
+            color: var(--primary);
+        }
+
+        @media (max-width: 640px) {
+            .header h1 { font-size: 1.75rem; }
+            .card { padding: 24px; }
+            .form-grid { grid-template-columns: 1fr; }
+        }
+
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: .7; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Алина Мустакимова</h1>
+            <p>Умный калькулятор калорий и персональных рекомендаций</p>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <div class="icon">👤</div>
+                Ваши параметры
+            </div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Пол</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="gender" id="female" value="female" checked>
+                            <label for="female">Женский</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="gender" id="male" value="male">
+                            <label for="male">Мужской</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="age">Возраст (лет)</label>
+                    <input type="number" id="age" min="10" max="100" placeholder="Например: 30">
+                </div>
+
+                <div class="form-group">
+                    <label for="height">Рост (см)</label>
+                    <input type="number" id="height" min="100" max="250" placeholder="Например: 170">
+                </div>
+
+                <div class="form-group">
+                    <label for="weight">Вес (кг)</label>
+                    <input type="number" id="weight" min="30" max="200" step="0.1" placeholder="Например: 65">
+                </div>
+
+                <div class="form-group full-width">
+                    <label for="activity">Уровень физической активности</label>
+                    <select id="activity">
+                        <option value="1.15">1.15 — Сидячий образ жизни по максимуму (работа на дому, нет тренировок)</option>
+                        <option value="1.2">1.2 — Сидячий образ жизни (офисная работа, нет тренировок)</option>
+                        <option value="1.375">1.375 — Легкая активность (1–3 легкие тренировки в неделю)</option>
+                        <option value="1.55" selected>1.55 — Средняя активность (3–5 тренировок в неделю)</option>
+                        <option value="1.725">1.725 — Высокая активность (6–7 интенсивных тренировок)</option>
+                        <option value="1.9">1.9 — Экстремальная активность (спортсмены, тяжелый физический труд)</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+
+        <div class="card">
+            <div class="section-title">
+                <div class="icon">🎯</div>
+                Ваша цель
+            </div>
+            <div class="form-grid">
+                <div class="form-group full-width">
+                    <label>Что хотите достичь?</label>
+                    <div class="radio-group">
+                        <div class="radio-option">
+                            <input type="radio" name="goal" id="lose" value="lose" checked>
+                            <label for="lose">Похудеть 🔥</label>
+                        </div>
+                        <div class="radio-option">
+                            <input type="radio" name="goal" id="gain" value="gain">
+                            <label for="gain">Набрать вес 💪</label>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="targetKg">Сколько кг</label>
+                    <input type="number" id="targetKg" min="1" max="50" step="0.5" placeholder="Например: 5">
+                </div>
+
+                <div class="form-group">
+                    <label for="weeks">За какой срок (недель)</label>
+                    <input type="number" id="weeks" min="1" max="104" placeholder="Например: 8">
+                </div>
+            </div>
+
+            <button class="btn btn-primary" onclick="calculate()">
+                <span>🚀</span> Рассчитать мою программу
+            </button>
+        </div>
+
+        <div class="card results" id="results">
+            <div class="section-title">
+                <div class="icon">📊</div>
+                Ваши результаты
+            </div>
+
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-value" id="bmr">0</div>
+                    <div class="stat-label">Базовый метаболизм (ккал)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="maintenance">0</div>
+                    <div class="stat-label">Норма поддержания (ккал)</div>
+                </div>
+                <div class="stat-card highlight">
+                    <div class="stat-value" id="target">0</div>
+                    <div class="stat-label">Ваша целевая норма (ккал)</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-value" id="diff">0</div>
+                    <div class="stat-label" id="diffLabel">Дефицит/профицит</div>
+                </div>
+            </div>
+
+            <div class="warning-box" id="warningBox">
+                <strong id="warningTitle">⚠️ Внимание</strong>
+                <p id="warningText"></p>
+            </div>
+
+            <div class="formula-info">
+                <strong>Формула расчета:</strong> Миффлин-Сан Жеор × коэффициент активности.<br>
+                Для достижения цели за выбранный срок учтен дополнительный 
+                <span id="formulaDetail">корректирующий коэффициент</span>.
+            </div>
+
+            <div class="divider"></div>
+
+            <div class="recommendations" id="recommendations">
+                <div class="section-title">
+                    <div class="icon">💡</div>
+                    <span id="recTitle">Персональные рекомендации</span>
+                </div>
+                <div class="rec-list" id="recList"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const loseRecs = [
+            "Начинайте каждое утро со стакана теплой воды с лимоном — это запускает метаболизм и готовит пищеварение к работе.",
+            "Делите свой рацион на 4–5 приемов пищи с интервалом 3–4 часа. Это поддерживает стабильный уровень сахара и предотвращает зажоры.",
+            "Включите в каждый прием пищи источник белка: яйца, курицу, рыбу, творог или бобовые. Белок ускоряет метаболизм и дает чувство сытости.",
+            "Замените простые углеводы (белый хлеб, сладости) на сложные: гречку, киноа, цельнозерновой хлеб, овсянку. Энергия будет поступать равномерно.",
+            "Ешьте овощи и зелень в каждом приеме пищи. Они богаты клетчаткой, которая наполняет желудок и содержит минимум калорий.",
+            "Пейте не менее 2,5–3 литров воды в день. Часто жажду мы принимаем за голод. Вода также участвует в расщеплении жиров.",
+            "Спите 7–9 часов. Недосып повышает уровень гормона голода грелина и снижает лептин, что провоцирует переедание.",
+            "Добавьте в рацион полезные жиры: авокадо, орехи, оливковое масло. Полное исключение жиров замедляет метаболизм.",
+            "Ведите дневник питания или используйте приложение. Осознанность — половина успеха: вы увидите скрытые калории в напитках и перекусах.",
+            "Занимайтесь силовыми тренировками 2–3 раза в неделю. Мышцы — печь для калорий, они сжигают энергию даже в состоянии покоя.",
+            "Делайте 8 000–12 000 шагов ежедневно. Прогулки после еды снижают скачок глюкозы и стимулируют сжигание жира.",
+            "Исключите сахарные напитки и соки. Одна банка сладкой газировки может содержать до 150 ккал — пустые калории без насыщения.",
+            "Используйте меньшие тарелки. Визуально порция кажется больше, а психологически вы чувствуете удовлетворение от еды.",
+            "Планируйте перекусы заранее: нарежьте овощи, приготовьте яйца, возьмите с собой горсть орехов. Это защитит от импульсивных покупок вредной еды.",
+            "Практикуйте осознанное питание: ешьте медленно, жуйте тщательно, отключите телефон. Мозг получает сигнал о сытости через 20 минут."
+        ];
+
+        const gainRecs = [
+            "Увеличьте калорийность за счет плотных, но полезных продуктов: ореховое масло, авокадо, сухофрукты, цельнозерновые каши.",
+            "Добавьте 1–2 дополнительных перекуса между основными приемами пищи. Идеально: банан с арахисовой пастой или творог с медом.",
+            "Фокусируйтесь на сложных углеводах: овсянка, бурый рис, макароны из твердых сортов пшеницы, батат — они дают долгую энергию для роста.",
+            "Белок должен присутствовать в каждом приеме пищи. Для набора массы стремитесь к 1.6–2.2 г белка на кг веса ежедневно.",
+            "Тренируйтесь по программе на гипертрофию: 8–12 повторений в подходе, 3–4 подхода, прогрессивная перегрузка весов.",
+            "Восстановление важнее тренировки. Мышцы растут во сне — обеспечьте себе 8–9 часов качественного сна в темном прохладном помещении.",
+            "Пейте протеиновый коктейль в течение 30 минут после тренировки. Это открывает 'анаболическое окно' для мышечного роста.",
+            "Не бойтесь углеводов вечером. Если вы тренируетесь вечером, ужин с кашей и белком поможет восстановиться ночью.",
+            "Включите в рацион красное мясо 2–3 раза в неделю. Оно богато креатином, железом и цинком — ключевыми элементами для силы и массы.",
+            "Добавьте в смузи овсянку, банан, протеин и ореховое масло — это 500+ калорий в одном стакане, легко для пищеварения.",
+            "Следите за уровнем стресса. Кортизол разрушает мышечную ткань. Добавьте расслабляющие практики: йога, медитация, прогулки.",
+            "Ешьте перед сном медленный белок: творог, кефир, казеиновый протеин. Аминокислоты будут поступать в кровь всю ночь.",
+            "Увеличивайте веса в упражнениях постепенно. Если делаете 12 повторений легко — прибавьте вес на следующей тренировке.",
+            "Не пропускайте тренировки ног. Приседания и тяги стимулируют выработку тестостерона и гормона роста, влияющих на весь организм.",
+            "Ведите дневник тренировок и питания. Фиксируйте веса, подходы и объемы — прогресс должен быть измеримым и последовательным."
+        ];
+
+        function shuffle(array, count) {
+            const shuffled = [...array].sort(() => Math.random() - 0.5);
+            return shuffled.slice(0, count);
+        }
+
+        function calculate() {
+            const gender = document.querySelector('input[name="gender"]:checked').value;
+            const age = parseFloat(document.getElementById('age').value);
+            const height = parseFloat(document.getElementById('height').value);
+            const weight = parseFloat(document.getElementById('weight').value);
+            const activity = parseFloat(document.getElementById('activity').value);
+            const goal = document.querySelector('input[name="goal"]:checked').value;
+            const targetKg = parseFloat(document.getElementById('targetKg').value);
+            const weeks = parseFloat(document.getElementById('weeks').value);
+
+            if (!age || !height || !weight || !targetKg || !weeks) {
+                alert('Пожалуйста, заполните все поля');
+                return;
+            }
+
+            // Mifflin-St Jeor
+            let bmr;
+            if (gender === 'female') {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) - 161;
+            } else {
+                bmr = (10 * weight) + (6.25 * height) - (5 * age) + 5;
+            }
+
+            const maintenance = Math.round(bmr * activity);
+            
+            // Calculate based on time target: 1kg fat ≈ 7700 kcal
+            const totalKcal = targetKg * 7700;
+            const dailyDiff = totalKcal / (weeks * 7);
+            
+            let target;
+            let diff;
+            let warning = '';
+            let warningType = '';
+            
+            if (goal === 'lose') {
+                target = Math.round(maintenance - dailyDiff);
+                diff = Math.round(dailyDiff);
+                
+                // Also apply -15% as baseline, but time-based calculation takes precedence if more aggressive
+                const baselineLose = Math.round(maintenance * 0.85);
+                if (target > baselineLose) {
+                    target = baselineLose;
+                    diff = maintenance - target;
+                }
+                
+                // Safety minimums
+                const minSafe = gender === 'female' ? 1200 : 1500;
+                if (target < minSafe) {
+                    target = minSafe;
+                    diff = maintenance - target;
+                    warning = `Для безопасного похудения суточная норма не должна опускаться ниже ${minSafe} ккал. Выбранный срок слишком агрессивен — рекомендуем увеличить его или скорректировать цель.`;
+                    warningType = 'danger';
+                } else if (target > maintenance * 0.9) {
+                    warning = 'Выбранный срок позволяет достичь цели очень плавно. Дефицит минимальный — результат может наступить медленнее, но стабильнее.';
+                    warningType = 'success';
+                }
+            } else {
+                target = Math.round(maintenance + dailyDiff);
+                diff = Math.round(dailyDiff);
+                
+                const baselineGain = Math.round(maintenance * 1.20);
+                if (target < baselineGain) {
+                    target = baselineGain;
+                    diff = target - maintenance;
+                }
+                
+                if (diff > 1000) {
+                    warning = 'Слишком большой профицит калорий может привести к набору жира вместо мышц. Рекомендуем увеличить срок или добавить силовые тренировки.';
+                    warningType = 'danger';
+                }
+            }
+
+            // Display results
+            document.getElementById('bmr').textContent = Math.round(bmr).toLocaleString();
+            document.getElementById('maintenance').textContent = maintenance.toLocaleString();
+            document.getElementById('target').textContent = target.toLocaleString();
+            document.getElementById('diff').textContent = (goal === 'lose' ? '-' : '+') + diff.toLocaleString();
+            document.getElementById('diffLabel').textContent = goal === 'lose' ? 'Дефицит (ккал/день)' : 'Профицит (ккал/день)';
+            
+            const formulaDetail = document.getElementById('formulaDetail');
+            formulaDetail.textContent = goal === 'lose' 
+                ? `дефицит ~${Math.round((diff/maintenance)*100)}% от нормы поддержания`
+                : `профицит ~${Math.round((diff/maintenance)*100)}% от нормы поддержания`;
+
+            // Warning box
+            const warningBox = document.getElementById('warningBox');
+            const warningText = document.getElementById('warningText');
+            const warningTitle = document.getElementById('warningTitle');
+            
+            if (warning) {
+                warningBox.className = 'warning-box active ' + warningType;
+                warningTitle.textContent = warningType === 'danger' ? '⚠️ Внимание' : (warningType === 'success' ? '✅ Отлично' : '💡 Информация');
+                warningText.textContent = warning;
+            } else {
+                warningBox.className = 'warning-box';
+            }
+
+            // Recommendations
+            const recList = document.getElementById('recList');
+            const recTitle = document.getElementById('recTitle');
+            const recs = goal === 'lose' ? loseRecs : gainRecs;
+            const selectedRecs = shuffle(recs, 5);
+            
+            recTitle.textContent = goal === 'lose' 
+                ? 'Рекомендации для эффективного похудения'
+                : 'Рекомендации для набора мышечной массы';
+            
+            recList.innerHTML = selectedRecs.map((text, i) => `
+                <div class="rec-item ${goal === 'gain' ? 'gain' : ''}" style="animation-delay: ${i * 0.1}s">
+                    <div class="rec-icon">${i + 1}</div>
+                    <div class="rec-text">${text}</div>
+                </div>
+            `).join('');
+
+            // Show results
+            document.getElementById('results').classList.add('active');
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    </script>
+</body>
+</html>
